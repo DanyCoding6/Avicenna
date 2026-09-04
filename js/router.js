@@ -37,7 +37,11 @@ export async function render() {
   current = match;
   listeners.forEach((fn) => fn(match, ctx));
   try {
-    const html = await match.route.view.render(ctx);
+    const view = match.route.view;
+    // Show the view's skeleton only if data takes longer than 150 ms (avoids a flash on cached loads).
+    const skel = setTimeout(() => { if (seq === renderSeq && view.skeleton) { main.classList.remove('view-enter'); main.innerHTML = view.skeleton(ctx); } }, 150);
+    const html = await view.render(ctx);
+    clearTimeout(skel);
     if (seq !== renderSeq) return; // a newer navigation won
     main.classList.remove('view-enter');
     main.innerHTML = html;

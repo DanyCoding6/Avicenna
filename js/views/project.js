@@ -1,6 +1,6 @@
 import { esc, daysUntil, dateFull, plural } from '../format.js';
 import { icons } from '../icons.js';
-import { bindActions, toast, emptyState, sheet } from '../ui.js';
+import { bindActions, toast, emptyState, sheet, haptic } from '../ui.js';
 import { rail, avatar } from '../components/index.js';
 import { refresh } from '../router.js';
 
@@ -24,7 +24,7 @@ export async function render({ api }) {
 
 export function mount(root, { api }) {
   bindActions(root, {
-    'toggle-milestone': async (el) => { await api.project.toggleMilestone(Number(el.dataset.idx)); refresh(); },
+    'toggle-milestone': async (el) => { haptic(); await api.project.toggleMilestone(Number(el.dataset.idx)); refresh(); },
     upload: () => {
       if (!api.project.upload) { toast('Available once Supabase storage is connected'); return; }
       const input = document.createElement('input'); input.type = 'file'; input.accept = '.pdf,.pptx,.key,.docx';

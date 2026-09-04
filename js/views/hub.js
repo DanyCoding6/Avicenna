@@ -1,6 +1,6 @@
 import { esc } from '../format.js';
 import { icons } from '../icons.js';
-import { bindActions } from '../ui.js';
+import { bindActions, skeletonPage } from '../ui.js';
 import { segmented } from '../components/index.js';
 import { prefs } from '../store.js';
 import * as directory from './directory.js';
@@ -8,6 +8,7 @@ import * as feed from './feed.js';
 import * as space from './space.js';
 
 export const header = { top: true };
+export const skeleton = () => skeletonPage({ block: false, rows: 6 });
 const SEGS = { scholars: directory, feed, space };
 
 export async function render(ctx) {

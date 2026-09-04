@@ -1,6 +1,6 @@
 import { esc } from '../format.js';
 import { icons } from '../icons.js';
-import { bindActions, toast, sheet, emptyState } from '../ui.js';
+import { bindActions, toast, sheet, emptyState, haptic } from '../ui.js';
 import { postCard } from '../components/index.js';
 import { refresh } from '../router.js';
 
@@ -15,6 +15,7 @@ export function mount(root, { api }) {
   bindActions(root, {
     like: async (el) => {
       const on = el.getAttribute('aria-pressed') === 'true';
+      haptic();
       const n = el.querySelector('span'); const count = Number(n.textContent || 0);
       el.setAttribute('aria-pressed', String(!on)); n.textContent = (on ? count - 1 : count + 1) || '';
       try { await api.feed.toggleLike(el.dataset.id); } catch (e) { toast(e.message, { type: 'error' }); }

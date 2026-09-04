@@ -1,6 +1,6 @@
 import { esc, dateLong } from '../format.js';
 import { icons } from '../icons.js';
-import { bindActions, toast, emptyState } from '../ui.js';
+import { bindActions, toast, emptyState, haptic } from '../ui.js';
 import { spine, resourceRow } from '../components/index.js';
 import { refresh } from '../router.js';
 
@@ -29,7 +29,7 @@ export async function render({ api, params }) {
 
 export function mount(root, { api, params }) {
   bindActions(root, {
-    'toggle-done': async (el) => { const done = !el.classList.contains('btn--on'); await api.curriculum.setDone(params.id, done); toast(done ? 'Chapter completed' : 'Marked as not done'); refresh(); },
+    'toggle-done': async (el) => { const done = !el.classList.contains('btn--on'); haptic(); await api.curriculum.setDone(params.id, done); toast(done ? 'Chapter completed' : 'Marked as not done'); refresh(); },
     'open-resource': async (el) => {
       if (!api.resources?.url) { toast('Available once Supabase storage is connected'); return; }
       const m = await api.curriculum.module(params.id); const r = m?.resources.find((x) => x.id === el.dataset.id);

@@ -7,6 +7,8 @@ import { esc } from './format.js';
 import { toast, sheet } from './ui.js';
 import { avatar } from './components/index.js';
 import { prefs } from './store.js';
+import { brand } from './brand.js';
+import { refresh } from './router.js';
 
 import * as signin from './views/signin.js';
 import * as home from './views/home.js';
@@ -47,9 +49,10 @@ function renderHeader(match, ctx) {
   if (h === null) { header.hidden = true; return; }
   header.hidden = false;
   if (!h || h.top) {
+    const mark = brand.wordmarkSvg ? `<span class="wordmark__svg">${brand.wordmarkSvg}</span>` : `${brand.markSvg ? `<span class="wordmark__mark">${brand.markSvg}</span>` : khatam('khatam')}<span class="wordmark__text">${esc(brand.name)}</span>`;
     header.innerHTML = `<div class="header__bar">
-      <a class="wordmark" href="#/home" aria-label="Avicenna home">${khatam('khatam')}<span class="wordmark__text">Avicenna</span></a>
-      <a href="#/profile" aria-label="Your profile">${avatar(state.me, 'avatar--s')}</a>
+      <a class="wordmark" href="#/home" aria-label="${esc(brand.name)} home">${mark}</a>
+      <span class="row" style="gap:10px">${state.me?.role === 'staff' ? '<a class="pill pill--gilt" href="#/staff">Staff</a>' : ''}<a href="#/profile" aria-label="Your profile">${avatar(state.me, 'avatar--s')}</a></span>
     </div>`;
   } else {
     header.innerHTML = `<div class="header__bar">
@@ -100,6 +103,7 @@ async function boot() {
   $('#tabbar').hidden = false;
   await start();
   if (navigator.onLine) state.api.flushQueue?.().catch(() => {});
+  wirePullToRefresh();
   registerSW();
   wireInstall();
   wireNetwork();
@@ -163,6 +167,33 @@ export function showInstallHelp() {
 
 window.avicenna = { version: APP_VERSION, state, showInstallHelp, navigate };
 boot().catch((err) => { console.error(err); $('#view').innerHTML = `<div class="empty"><div class="empty__title">Could not start</div><div class="empty__sub">${esc(err.message || err)}</div></div>`; });
+
+// Pull to refresh on the four tab roots: a khatam that turns with the pull and spins while refreshing.
+function wirePullToRefresh() {
+  const ROOTS = new Set(['/home', '/events', '/programme', '/hub']);
+  const el = document.createElement('div'); el.className = 'ptr'; el.innerHTML = khatam('khatam'); document.body.appendChild(el);
+  const icon = el.querySelector('.khatam');
+  let startY = 0, pulling = false, dist = 0;
+  const THRESHOLD = 64;
+  const eligible = () => window.scrollY <= 0 && ROOTS.has((location.hash.replace(/^#/, '') || '/home').split('?')[0].replace(/\/(scholars|feed|space)$/, ''));
+  document.addEventListener('touchstart', (e) => { if (!eligible() || document.querySelector('#sheet-root[data-open]')) return; startY = e.touches[0].clientY; pulling = true; dist = 0; }, { passive: true });
+  document.addEventListener('touchmove', (e) => {
+    if (!pulling) return;
+    dist = Math.max(0, e.touches[0].clientY - startY);
+    if (dist < 8) return;
+    const p = Math.min(1, dist / THRESHOLD);
+    icon.style.opacity = String(p); icon.style.transform = `translateY(${Math.min(dist, 96) * 0.5}px) rotate(${p * 180}deg)`;
+    el.classList.toggle('ptr--armed', dist >= THRESHOLD);
+  }, { passive: true });
+  document.addEventListener('touchend', async () => {
+    if (!pulling) return; pulling = false;
+    if (dist >= THRESHOLD) {
+      el.classList.add('ptr--refreshing'); icon.style.transform = 'translateY(32px)';
+      try { await refresh(); } finally { setTimeout(() => { el.classList.remove('ptr--refreshing', 'ptr--armed'); icon.style.opacity = '0'; icon.style.transform = ''; }, 300); }
+    } else { el.classList.remove('ptr--armed'); icon.style.opacity = '0'; icon.style.transform = ''; }
+  });
+}
+window.avicennaRefresh = refresh;
 
 function wireNetwork() {
   const set = () => document.body.classList.toggle('is-offline', !navigator.onLine);

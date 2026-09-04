@@ -4,6 +4,16 @@ import { esc } from './format.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 
+// Short acknowledgement on devices that support it (Android). iOS ignores it silently.
+export const haptic = (ms = 8) => { try { navigator.vibrate?.(ms); } catch (_) {} };
+
+// Run an async action with a busy state on the triggering button.
+export async function busy(btn, fn) {
+  if (!btn) return fn();
+  btn.classList.add('is-busy'); btn.setAttribute('aria-busy', 'true');
+  try { return await fn(); } finally { btn.classList.remove('is-busy'); btn.removeAttribute('aria-busy'); }
+}
+
 export function toast(message, { type = 'info', action, onAction, duration = 3200 } = {}) {
   const host = $('#toasts');
   const el = document.createElement('div');
@@ -42,8 +52,7 @@ export function sheet({ title, body = '', actions = [], onMount, onClose, dismis
   root.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => dismissible && closeSheet()));
   root.querySelectorAll('[data-action-idx]').forEach((b) => b.addEventListener('click', async () => {
     const a = actions[Number(b.dataset.actionIdx)];
-    b.disabled = true;
-    try { const r = await a.onClick?.(api); if (r !== false) closeSheet(); } finally { b.disabled = false; }
+    await busy(b, async () => { const r = await a.onClick?.(api); if (r !== false) closeSheet(); });
   }));
   onMount?.(api);
   return api;
@@ -77,6 +86,10 @@ export function confirm({ title, body, confirmLabel = 'Confirm', danger = false 
 
 export const skeletonRows = (n = 4) => `<div class="ledger">${Array.from({ length: n }, () => `
   <div class="skeleton-row"><div class="skeleton"></div><div><div class="skeleton" style="width:70%;height:16px"></div><div class="skeleton mt-2" style="width:45%"></div></div></div>`).join('')}</div>`;
+export const skeletonPage = ({ title = true, block = true, rows = 4 } = {}) => `
+  ${title ? `<div class="skeleton-block"><div class="skeleton" style="width:40%;height:30px"></div><div class="skeleton mt-2" style="width:70%"></div></div>` : ''}
+  ${block ? `<div class="skeleton-block"><div class="skeleton" style="height:150px;border-radius:var(--r-l)"></div></div>` : ''}
+  <div class="mt-6">${skeletonRows(rows)}</div>`;
 
 export const emptyState = (title, sub = '') => `<div class="empty">${khatam()}<div class="empty__title">${esc(title)}</div>${sub ? `<div class="empty__sub">${esc(sub)}</div>` : ''}</div>`;
 

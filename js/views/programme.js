@@ -1,8 +1,10 @@
 import { esc, monthName, dateLong, relative, daysUntil, plural } from '../format.js';
 import { icons } from '../icons.js';
 import { strandRow, cadence } from '../components/index.js';
+import { skeletonPage } from '../ui.js';
 
 export const header = { top: true };
+export const skeleton = () => skeletonPage({ block: false, rows: 5 });
 
 export async function render({ api }) {
   const s = await api.programme.status();

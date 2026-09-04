@@ -1,5 +1,6 @@
 // Sign-in: email → 6-digit code (the same email also carries a magic link for desktop).
 import { khatam, icons } from '../icons.js';
+import { brand } from '../brand.js';
 import { esc } from '../format.js';
 import { toast } from '../ui.js';
 
@@ -7,8 +8,8 @@ export const header = null;
 
 export function render() {
   return `<div class="signin">
-    ${khatam('signin__mark')}
-    <h1 class="signin__title">Salaam.<br>Welcome to Avicenna.</h1>
+    ${brand.markSvg ? `<span class="signin__mark">${brand.markSvg}</span>` : khatam('signin__mark')}
+    <h1 class="signin__title">Salaam.<br>Welcome to ${esc(brand.name)}.</h1>
     <p class="signin__sub">The scholars' app for the Avicenna Foundation. Sign in with the email address the foundation holds for you.</p>
     <form class="signin__form" id="signin-email" novalidate>
       <label class="field"><span class="field__label label">Email</span><input class="input" type="email" name="email" inputmode="email" autocomplete="email" placeholder="you@university.ac.uk" required></label>

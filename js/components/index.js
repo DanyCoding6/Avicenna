@@ -4,7 +4,7 @@ import { icons, khatam } from '../icons.js';
 
 export const avatar = (p, size = '') => {
   if (!p) return `<span class="avatar ${size}">?</span>`;
-  const cls = `avatar ${size}${p.role === 'coach' || p.role === 'mentor' ? ' avatar--gilt' : ''}`;
+  const cls = `avatar ${size}${['coach', 'mentor', 'chaplain'].includes(p.role) ? ' avatar--gilt' : ''}`;
   return p.avatar_url ? `<span class="${cls}"><img src="${esc(p.avatar_url)}" alt="${esc(p.full_name)}"></span>` : `<span class="${cls}" aria-hidden="true">${esc(initials(p.full_name))}</span>`;
 };
 
@@ -121,7 +121,7 @@ export const pass = (next, me) => {
     kind = 'Adam Hub booking'; title = item.purpose; sub = `${range(item.starts_at, item.ends_at)}<br>Adam Hub, Westminster`; href = '#/hub/space';
     foot = `<span class="pill pill--tile">Approved</span><span class="pass__count">${plural(item.headcount, 'person', 'people')}</span>`;
   }
-  return `<div class="pass girih-veil">
+  return `<div class="pass">
     <a class="pass__top" href="${href}">
       <span class="pass__date"><span class="pass__num">${d.num}</span><span class="pass__mon">${d.mon}</span></span>
       <span><span class="label pass__kind">${esc(kind)}</span><span class="pass__title" style="display:block">${esc(title)}</span><span class="pass__sub" style="display:block">${sub}</span></span>
@@ -139,7 +139,7 @@ export const postCard = (p, { link = true } = {}) => `
         <div class="post__name truncate">${esc(p.author?.full_name || 'Scholar')}</div>
         <div class="post__meta truncate">${p.author?.role === 'alumni' ? 'Alumni' : `Cohort ${esc(p.author?.cohort || '')}`} · ${relative(p.created_at)}</div>
       </div>
-      ${p.kind === 'ask' ? '<span class="pill pill--lapis">Ask</span>' : p.kind === 'win' ? '<span class="pill pill--gilt">Win</span>' : ''}${p.pinned ? ` <span class="pill pill--gilt">${khatam('khatam').replace('class="khatam"', 'style="width:10px;height:10px"')} Pinned</span>` : ''}
+      ${p.kind === 'ask' ? '<span class="pill pill--lapis">Ask</span>' : p.kind === 'win' ? '<span class="pill pill--gilt">Win</span>' : ''}${p.pinned ? ` <span class="pill pill--gilt">Pinned</span>` : ''}
     </div>
     ${link ? `<a href="#/post/${esc(p.id)}" style="color:inherit;display:block" class="post__body">${esc(p.body)}</a>` : `<div class="post__body">${esc(p.body)}</div>`}
     ${p.image_url ? `<div class="post__image"><img src="${esc(p.image_url)}" alt="" loading="lazy"></div>` : ''}
@@ -175,7 +175,7 @@ export const announcementRow = (a) => `
 
 export const journalCard = (j) => `
   <a class="journal-card" href="#/journal/${esc(j.id)}">
-    <div class="cover girih" style="background-image: linear-gradient(135deg, rgba(20,34,74,.9), rgba(12,24,48,.95)), url('')"></div>
+    <div class="cover"></div>
     <div class="journal-card__body"><div class="journal-card__title clamp-2">${esc(j.title)}</div><div class="meta mt-2">${esc(dayParts(j.occurred_on).num)} ${esc(dayParts(j.occurred_on).mon)} · ${esc(j.academic_year)}</div></div>
   </a>`;
 

@@ -1,0 +1,14 @@
+/* Avicenna — brand swap point.
+   Replace these values with the foundation's brand colours and every token in tokens.css follows.
+   Keep grounds dark and the accent warm and desaturated, or re-check contrast with `node tools/contrast-check.mjs`. */
+:root {
+  --brand-ground:     #070F22;  /* page background */
+  --brand-surface:    #0E1A33;  /* rows, panels, tab bar */
+  --brand-raised:     #16254A;  /* the one lifted object on a screen (pass, sheet) */
+  --brand-accent:     #DDB760;  /* act now / achieved */
+  --brand-accent-ink: #0B1224;  /* text on the accent */
+  --brand-link:       #93A9EC;  /* links, the confidential strand */
+  --brand-success:    #3DB5A5;  /* going, live, approved */
+  --brand-danger:     #DA7460;  /* destructive, overdue, declined */
+  --brand-text:       #F3EFE4;  /* primary text */
+}

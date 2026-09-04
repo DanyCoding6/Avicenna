@@ -1,10 +1,11 @@
 import { esc, firstName, greetingLine, daysUntil, monthName, plural, dayParts } from '../format.js';
 import { icons, khatam } from '../icons.js';
-import { skeletonRows, bindActions, toast } from '../ui.js';
+import { skeletonPage, bindActions, toast, haptic, busy } from '../ui.js';
 import { pass, cadence, spine, sectionHead, announcementRow, opportunityRow, journalCard } from '../components/index.js';
 import { prefs } from '../store.js';
 
 export const header = { top: true };
+export const skeleton = () => skeletonPage({ rows: 3 });
 
 export async function render({ api, me }) {
   const h = await api.home();
@@ -12,7 +13,7 @@ export async function render({ api, me }) {
   const proj = h.project;
   const projDays = proj?.presentation ? daysUntil(proj.presentation.starts_at) : null;
   return `
-    <section class="greeting girih-veil">
+    <section class="greeting">
       <h1 class="greeting__salaam">Salaam, <em>${esc(firstName(me.full_name))}.</em></h1>
       <div class="greeting__line">${greetingLine()}. ${h.unread ? `${plural(h.unread, 'new message')} · ` : ''}${monthName()} at a glance.</div>
     </section>
@@ -50,6 +51,7 @@ export function mount(root, ctx) {
     rsvp: async (el) => {
       const id = el.dataset.id;
       const going = el.classList.contains('btn--on');
+      haptic();
       el.classList.toggle('btn--on', !going); el.classList.toggle('btn--primary', going);
       el.innerHTML = going ? 'RSVP' : `${icons.check} I'm going`;
       try { await ctx.api.events.rsvp(id, going ? null : 'going'); toast(going ? 'RSVP removed' : 'See you there'); }

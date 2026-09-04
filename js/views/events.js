@@ -1,9 +1,10 @@
 import { esc } from '../format.js';
-import { bindActions, emptyState } from '../ui.js';
+import { bindActions, emptyState, skeletonPage } from '../ui.js';
 import { eventRow, opportunityRow, seasonHero, segmented, chips } from '../components/index.js';
 import { prefs } from '../store.js';
 
 export const header = { top: true };
+export const skeleton = () => skeletonPage({ rows: 5 });
 const FILTERS = [
   { value: 'all', label: 'All' }, { value: 'cohort', label: 'My cohort' }, { value: 'foundation', label: 'Foundation' },
   { value: 'online', label: 'Online' }, { value: 'adam_hub', label: 'Adam Hub' },

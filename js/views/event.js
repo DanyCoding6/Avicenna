@@ -1,7 +1,7 @@
 import { esc, dayParts, range, time, dateFull, nl2p, plural, daysUntil } from '../format.js';
 import { icons } from '../icons.js';
 import { refresh } from '../router.js';
-import { bindActions, toast, sheet, emptyState } from '../ui.js';
+import { bindActions, toast, sheet, emptyState, haptic, busy } from '../ui.js';
 import { pillFor, avatar, isLive } from '../components/index.js';
 
 export const header = { title: 'Event', backTo: '/events' };
@@ -46,8 +46,9 @@ export function mount(root, { api, params, navigate }) {
       const status = el.dataset.status;
       const current = root.querySelector('[data-action=rsvp].btn--on') ? 'going' : root.querySelector('[data-action=rsvp][data-status=maybe].btn--ghost') ? 'maybe' : null;
       const next = current === status ? null : status;
+      haptic();
       try {
-        await api.events.rsvp(params.id, next);
+        await busy(el, () => api.events.rsvp(params.id, next));
         toast(next === 'going' ? 'See you there' : next === 'maybe' ? 'Marked as maybe' : 'RSVP removed');
         refresh();
       } catch (e) { toast(e.message, { type: 'error' }); }

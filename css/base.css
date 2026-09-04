@@ -12,7 +12,7 @@ body {
   margin: 0;
   min-height: 100dvh;
   background: var(--ink-900);
-  color: var(--paper-100);
+  color: var(--text-1);
   font-family: var(--font-ui);
   font-size: var(--fs-body);
   line-height: var(--lh-body);
@@ -24,17 +24,17 @@ body {
 img, svg, video { display: block; max-width: 100%; }
 button, input, textarea, select { font: inherit; color: inherit; }
 button { background: none; border: 0; padding: 0; cursor: pointer; }
-a { color: var(--lapis-300); text-decoration: none; }
+a { color: var(--link); text-decoration: none; }
 a:hover { text-decoration: underline; text-underline-offset: 3px; }
 p { margin: 0 0 var(--s-3); }
 ul, ol { margin: 0; padding: 0; list-style: none; }
-h1, h2, h3, h4 { margin: 0; font-family: var(--font-display); font-weight: 600; line-height: var(--lh-display); letter-spacing: -0.01em; font-variant-numeric: lining-nums; }
+h1, h2, h3, h4 { margin: 0; font-family: var(--font-display); font-weight: 600; line-height: var(--lh-display); letter-spacing: var(--tracking-display); font-variant-numeric: lining-nums; text-wrap: balance; }
 h1 { font-size: var(--fs-display-xl); }
 h2 { font-size: var(--fs-display-l); }
 h3 { font-size: var(--fs-display-m); }
 [hidden] { display: none !important; }
 :focus-visible { outline: none; box-shadow: var(--focus); border-radius: var(--r-s); }
-::selection { background: var(--gilt-700); color: var(--paper-100); }
+::selection { background: var(--gilt-700); color: var(--text-1); }
 
 /* Text utilities */
 .display { font-family: var(--font-display); font-weight: 600; line-height: var(--lh-display); }
@@ -42,12 +42,13 @@ h3 { font-size: var(--fs-display-m); }
 .display-l { font-size: var(--fs-display-l); }
 .display-m { font-size: var(--fs-display-m); }
 .italic { font-style: italic; }
-.secondary { color: var(--paper-300); font-size: var(--fs-secondary); }
-.muted { color: var(--paper-500); }
-.meta { font-family: var(--font-mono); font-size: var(--fs-meta); color: var(--paper-300); letter-spacing: 0.01em; }
-.label { font-family: var(--font-mono); font-size: var(--fs-label); font-weight: 500; letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--gilt-500); }
-.label--muted { color: var(--paper-500); }
-.gilt { color: var(--gilt-500); }
+.secondary { color: var(--text-2); font-size: var(--fs-secondary); }
+.muted { color: var(--text-3); }
+.meta { font-family: var(--font-mono); font-size: var(--fs-meta); color: var(--text-2); letter-spacing: 0.01em; }
+.label { font-family: var(--font-mono); font-size: var(--fs-label); font-weight: 500; letter-spacing: var(--tracking-caps); text-transform: uppercase; color: var(--text-3); }
+.label--muted { color: var(--text-3); }
+.label--accent { color: var(--accent); }
+.gilt { color: var(--accent); }
 .tile { color: var(--tile-500); }
 .coral { color: var(--coral-500); }
 .truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

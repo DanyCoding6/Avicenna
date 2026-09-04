@@ -1,5 +1,5 @@
 /* Avicenna service worker — app shell precache + stale-while-revalidate for data. */
-const VERSION = 'v1.0.0';
+const VERSION = 'v1.1.0';
 const SHELL = `avicenna-shell-${VERSION}`;
 const DATA = `avicenna-data-${VERSION}`;
 const IMAGES = 'avicenna-images';
@@ -8,8 +8,8 @@ const PRECACHE = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './css/tokens.css', './css/base.css', './css/components.css', './css/views.css',
-  './js/app.js', './js/config.js', './js/router.js', './js/store.js', './js/ui.js', './js/format.js', './js/icons.js',
+  './css/brand.css', './css/tokens.css', './css/base.css', './css/components.css', './css/views.css',
+  './js/app.js', './js/config.js', './js/brand.js', './js/router.js', './js/store.js', './js/ui.js', './js/format.js', './js/icons.js',
   './js/data.js', './js/data/demo.js', './js/data/supabase.js', './js/demo-data.js', './js/supabase.js', './js/auth.js',
   './js/components/index.js',
   './js/views/signin.js', './js/views/home.js', './js/views/events.js', './js/views/event.js', './js/views/opportunities.js',
