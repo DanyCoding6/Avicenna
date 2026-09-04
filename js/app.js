@@ -27,6 +27,8 @@ import * as post from './views/post.js';
 import * as thread from './views/thread.js';
 import * as journal from './views/journal.js';
 import * as profile from './views/profile.js';
+import * as staff from './views/staff.js';
+import * as scholarship from './views/scholarship.js';
 
 const $ = (s) => document.querySelector(s);
 const TABS = [
@@ -85,6 +87,9 @@ function routes() {
     { path: '/journal', tab: 'home', view: journal },
     { path: '/journal/:id', tab: 'home', view: journal },
     { path: '/profile', tab: 'home', view: profile },
+    { path: '/scholarship', tab: 'home', view: scholarship },
+    { path: '/staff', tab: 'home', view: staff },
+    { path: '/staff/:section', tab: 'home', view: staff },
     { path: '*', tab: 'home', view: home },
   ];
 }

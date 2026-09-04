@@ -182,3 +182,15 @@ export const hub_comments = [
   { id: 'hc-4', post_id: 'hp-2', author_id: ME_ID, body: 'Huge. Congratulations.', created_at: daysAgo(1, 21) },
   { id: 'hc-5', post_id: 'hp-5', author_id: 's-adam', body: 'My uncle is on the committee at Leeds Grand Mosque, will ask.', created_at: daysAgo(4, 9) },
 ];
+
+// ---------- Round 2: scholarship years & documents ----------
+export const scholarship_years = [
+  { scholar_id: ME_ID, academic_year: '2025/26', funding_status: 'confirmed', fee_amount: 9535, enrolment_due: at(12), transcript_due: at(300), notes: 'Fees paid directly to the university in October.' },
+  { scholar_id: ME_ID, academic_year: '2024/25', funding_status: 'paid', fee_amount: 9250, enrolment_due: daysAgo(340), transcript_due: daysAgo(60), notes: null },
+  { scholar_id: 's-ibrahim', academic_year: '2025/26', funding_status: 'pending', fee_amount: 9535, enrolment_due: at(12), transcript_due: at(300), notes: null },
+];
+export const scholar_documents = [
+  { id: 'doc-1', scholar_id: ME_ID, academic_year: '2024/25', kind: 'enrolment_confirmation', storage_path: 'demo/enrolment-2024.pdf', filename: 'enrolment-2024.pdf', size_bytes: 182000, uploaded_at: daysAgo(330), status: 'accepted', staff_note: null },
+  { id: 'doc-2', scholar_id: ME_ID, academic_year: '2024/25', kind: 'transcript', storage_path: 'demo/transcript-y1.pdf', filename: 'transcript-y1.pdf', size_bytes: 96000, uploaded_at: daysAgo(58), status: 'accepted', staff_note: null },
+  { id: 'doc-3', scholar_id: 's-ibrahim', academic_year: '2025/26', kind: 'enrolment_confirmation', storage_path: 'demo/ibrahim-enrolment.pdf', filename: 'UCL-enrolment-letter.pdf', size_bytes: 210000, uploaded_at: daysAgo(1), status: 'uploaded', staff_note: null },
+];

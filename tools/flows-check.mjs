@@ -85,6 +85,36 @@ await go('/profile');
 await page.fill('input[name=currently]', 'Third year, finally on the wards'); await page.click('#profile-form button[type=submit]'); await page.waitForTimeout(400);
 await go('/scholar/s-aisha'); check('profile: currently saved', /finally on the wards/.test(await text()));
 
+// ---- Scholarship: upload a document through the native picker
+await go('/scholarship');
+const [chooser] = await Promise.all([page.waitForEvent('filechooser'), page.locator('[data-action=upload][data-kind=enrolment_confirmation]').first().click()]);
+await chooser.setFiles({ name: 'enrolment-2025.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4 demo') });
+await page.waitForTimeout(800);
+check('scholarship: document uploaded and in review', /enrolment-2025\.pdf/.test(await text()) && /in review/i.test(await text()));
+
+// ---- Staff: flip role, review inbox, create an event, open slots
+await go('/profile'); await page.locator('#demo-staff').check({ force: true }); await page.waitForTimeout(500);
+await go('/staff'); check('staff: inbox shows the pending request and document', /Adam Hub requests/i.test(await text()) && /Documents to review/i.test(await text()));
+const nSpace = await page.locator('[data-action=space][data-status=approved]').count();
+await page.locator('[data-action=space][data-status=approved]').first().click(); await page.waitForTimeout(600);
+check('staff: request approved', (await page.locator('[data-action=space][data-status=approved]').count()) === nSpace - 1);
+const nDoc = await page.locator('[data-action=doc][data-status=accepted]').count();
+await page.locator('[data-action=doc][data-status=accepted]').first().click(); await page.waitForTimeout(600);
+check('staff: document accepted', (await page.locator('[data-action=doc][data-status=accepted]').count()) === nDoc - 1);
+await go('/staff/events'); await page.click('[data-action=add]'); await page.waitForTimeout(300);
+const s2 = sheetOpen(); const d2 = new Date(); d2.setDate(d2.getDate() + 20);
+await s2.locator('[name=title]').fill('Trustees dinner'); await s2.locator('[name=starts_at]').fill(d2.toISOString().slice(0, 10) + 'T19:00'); await s2.locator('[name=location]').fill('Adam Hub, Westminster'); await s2.locator('[name=venue]').selectOption('adam_hub');
+await s2.locator('[data-action-idx]').last().click(); await page.waitForTimeout(500);
+check('staff: event created', /Trustees dinner/.test(await text()));
+await go('/staff/coaching'); await page.click('[data-action=add]'); await page.waitForTimeout(300);
+const d3 = new Date(); d3.setDate(d3.getDate() + 8);
+await sheetOpen().locator('[name=date]').fill(d3.toISOString().slice(0, 10)); await sheetOpen().locator('[name=weeks]').fill('2'); await sheetOpen().locator('[name=times]').fill('09:00, 10:00');
+await sheetOpen().locator('[data-action-idx]').click(); await page.waitForTimeout(500);
+check('staff: coaching slots opened', /09:00–10:00/.test(await text()) && /10:00–11:00/.test(await text()));
+await go('/profile'); await page.locator('#demo-staff').uncheck({ force: true }); await page.waitForTimeout(500);
+await go('/events'); check('scholar sees the staff-created event', /Trustees dinner/.test(await text()));
+await go('/hub/space'); check('scholar sees the approved booking', /Project rehearsal\s+APPROVED/i.test(await text()));
+
 await go('/home'); await page.screenshot({ path: `${out}/home_after.png`, fullPage: true });
 check('home: reflects bookings', /Both sessions|2 of 2|in the diary/.test(await text()));
 await browser.close();

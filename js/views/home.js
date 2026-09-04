@@ -3,12 +3,14 @@ import { icons, khatam } from '../icons.js';
 import { skeletonPage, bindActions, toast, haptic, busy } from '../ui.js';
 import { pass, cadence, spine, sectionHead, announcementRow, opportunityRow, journalCard } from '../components/index.js';
 import { prefs } from '../store.js';
+import { dueSoon } from './scholarship.js';
 
 export const header = { top: true };
 export const skeleton = () => skeletonPage({ rows: 3 });
 
 export async function render({ api, me }) {
-  const h = await api.home();
+  const [h, sch] = await Promise.all([api.home(), api.scholarship?.overview().catch(() => null)]);
+  const due = sch ? dueSoon(sch) : null;
   const installable = !window.matchMedia('(display-mode: standalone)').matches && !prefs.get('install-dismissed') && !prefs.get('installed');
   const proj = h.project;
   const projDays = proj?.presentation ? daysUntil(proj.presentation.starts_at) : null;
@@ -18,6 +20,7 @@ export async function render({ api, me }) {
       <div class="greeting__line">${greetingLine()}. ${h.unread ? `${plural(h.unread, 'new message')} · ` : ''}${monthName()} at a glance.</div>
     </section>
     ${installable ? `<div class="install-row">${khatam('khatam')}<div class="grow"><div style="font-weight:500">Add Avicenna to your home screen</div><div class="secondary" style="font-size:13px">Opens full-screen, works offline.</div></div><button class="btn btn--s btn--secondary" type="button" data-action="install">How</button><button class="btn-icon" type="button" data-action="dismiss-install" aria-label="Dismiss">${icons.x}</button></div>` : ''}
+    ${due ? `<a class="notice notice--warn mt-4" href="#/scholarship" style="display:flex;color:inherit">${icons.file}<div><strong style="display:block">${due.reason === 'rejected' ? `Your ${due.kind.replace('_', ' ')} needs another look` : `${due.kind === 'transcript' ? 'Transcript' : 'Enrolment confirmation'} due ${due.days < 0 ? 'now' : due.days === 0 ? 'today' : `in ${due.days} days`}`}</strong><span class="secondary" style="font-size:13px">${due.reason === 'rejected' ? esc(due.note || 'See the note from the team.') : 'The foundation needs it to release your fees. Upload it in My scholarship.'}</span></div></a>` : ''}
     <section class="section" style="margin-top:20px">
       ${sectionHead('Next', { href: '/events' })}
       <div style="margin:0 calc(-1 * var(--gutter))">${pass(h.next, me)}</div>

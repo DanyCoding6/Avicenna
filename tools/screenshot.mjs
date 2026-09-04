@@ -26,6 +26,20 @@ for (const r of routes) {
   const text = (await page.locator('#view').innerText()).slice(0, 80).replace(/\s+/g, ' ');
   console.log(r.padEnd(34), text);
 }
+// Staff and scholarship routes: flip the demo role switch on the profile page first.
+await page.goto(base + '#/profile'); await page.waitForTimeout(400);
+const sw = page.locator('#demo-staff');
+if (await sw.count()) {
+  await sw.check({ force: true }); await page.waitForTimeout(500);
+  for (const r of ['/scholarship', '/staff', '/staff/events', '/staff/scholars', '/staff/coaching', '/staff/opportunities']) {
+    await page.goto(base + '#' + r); await page.waitForTimeout(500);
+    await page.screenshot({ path: `${out}/${r.replace(/^\//, '').replace(/[\/?=]/g, '_')}.png`, fullPage: process.env.FULL === '1' });
+    const text = (await page.locator('#view').innerText()).slice(0, 80).replace(/\s+/g, ' ');
+    console.log(r.padEnd(34), text);
+    if (/went wrong|Staff only/.test(text)) errors.push(`[view] ${r}: ${text}`);
+  }
+  await page.goto(base + '#/profile'); await page.waitForTimeout(300); await page.locator('#demo-staff').uncheck({ force: true }); await page.waitForTimeout(300);
+}
 await browser.close();
 if (errors.length) { console.log('\nERRORS:'); errors.forEach((e) => console.log(' ', e)); process.exit(1); }
 console.log('\nno errors');

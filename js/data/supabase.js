@@ -1,5 +1,6 @@
 // Supabase API. Same surface as data/demo.js so views never know which one they are talking to.
 import { getClient } from '../supabase.js';
+import { SUPABASE_URL } from '../config.js';
 import { sendCode, verifyCode, signOut as authSignOut } from '../auth.js';
 import { queue, cache } from '../store.js';
 import { toDate } from '../format.js';
@@ -255,6 +256,80 @@ export const api = {
   },
 
   announcements: { async list() { return must(await sb().from('announcements').select('*').order('pinned', { ascending: false }).order('published_at', { ascending: false })); } },
+
+  scholarship: {
+    async overview() {
+      const m = await me();
+      const [years, docs] = await Promise.all([
+        must(await sb().from('scholarship_years').select('*').eq('scholar_id', m.id).order('academic_year', { ascending: false })),
+        must(await sb().from('scholar_documents').select('*').eq('scholar_id', m.id).order('uploaded_at', { ascending: false })),
+      ]);
+      return { years: years.map((y) => ({ ...y, documents: docs.filter((d) => d.academic_year === y.academic_year) })), current: years[0]?.academic_year || null };
+    },
+    async upload(kind, academic_year, file) {
+      const m = await me(); const path = `${m.id}/${academic_year.replace('/', '-')}/${Date.now()}-${file.name}`;
+      const { error } = await sb().storage.from('scholar-documents').upload(path, file); if (error) throw new Error(error.message);
+      return must(await sb().from('scholar_documents').insert({ scholar_id: m.id, academic_year, kind, storage_path: path, filename: file.name, size_bytes: file.size }).select().single());
+    },
+    async remove(id) { const d = must(await sb().from('scholar_documents').select('storage_path').eq('id', id).single()); must(await sb().from('scholar_documents').delete().eq('id', id)); await sb().storage.from('scholar-documents').remove([d.storage_path]); },
+    async url(doc) { const { data, error } = await sb().storage.from('scholar-documents').createSignedUrl(doc.storage_path, 600); if (error) throw new Error(error.message); return data.signedUrl; },
+  },
+
+  staff: {
+    async inbox() {
+      const [space, interest, documents] = await Promise.all([
+        must(await sb().from('space_requests').select('*').eq('status', 'pending').order('starts_at')),
+        must(await sb().from('opportunity_interest').select('*, opportunity:opportunities(id, title, organisation, deadline)').eq('status', 'submitted').order('created_at')),
+        must(await sb().from('scholar_documents').select('*').eq('status', 'uploaded').order('uploaded_at')),
+      ]);
+      const map = await people([...space.map((r) => r.scholar_id), ...interest.map((i) => i.scholar_id), ...documents.map((d) => d.scholar_id)]);
+      const withScholar = (rows) => rows.map((r) => ({ ...r, scholar: map.get(r.scholar_id) }));
+      return { space: withScholar(space), interest: withScholar(interest), documents: withScholar(documents), counts: { space: space.length, interest: interest.length, documents: documents.length } };
+    },
+    async counts() { const [row] = must(await sb().rpc('staff_inbox_counts')); return row || { space: 0, interest: 0, documents: 0 }; },
+    space: { async decide(id, status, note) { must(await sb().from('space_requests').update({ status, staff_note: note || null }).eq('id', id)); } },
+    interest: { async setStatus(opportunity_id, scholar_id, status) { must(await sb().from('opportunity_interest').update({ status }).match({ opportunity_id, scholar_id })); } },
+    documents: { async decide(id, status, note) { must(await sb().from('scholar_documents').update({ status, staff_note: note || null, reviewed_at: nowIso() }).eq('id', id)); }, async url(doc) { return api.scholarship.url(doc); } },
+    events: {
+      async list() { return must(await sb().from('events_with_my_rsvp').select('*').order('starts_at', { ascending: false })); },
+      async upsert(row) { const m = await me(); const { id, going_count, my_status, attendees, ...data } = row; if (id) return must(await sb().from('events').update(data).eq('id', id).select().single()); return must(await sb().from('events').insert({ ...data, created_by: m.id }).select().single()); },
+      async remove(id) { must(await sb().from('events').delete().eq('id', id)); },
+    },
+    announcements: {
+      async list() { return api.announcements.list(); },
+      async upsert(row) { const m = await me(); const { id, ...data } = row; if (id) return must(await sb().from('announcements').update(data).eq('id', id).select().single()); return must(await sb().from('announcements').insert({ ...data, author_id: m.id }).select().single()); },
+      async remove(id) { must(await sb().from('announcements').delete().eq('id', id)); },
+    },
+    opportunities: {
+      async list() { return must(await sb().from('opportunities').select('*').order('deadline', { ascending: false })); },
+      async upsert(row) { const { id, mine, ...data } = row; if (id) return must(await sb().from('opportunities').update(data).eq('id', id).select().single()); return must(await sb().from('opportunities').insert(data).select().single()); },
+      async remove(id) { must(await sb().from('opportunities').delete().eq('id', id)); },
+      async interest(id) { const rows = must(await sb().from('opportunity_interest').select('*').eq('opportunity_id', id).order('created_at')); const map = await people(rows.map((r) => r.scholar_id)); return rows.map((r) => ({ ...r, scholar: map.get(r.scholar_id) })); },
+    },
+    journal: {
+      async list() { return must(await sb().from('journal_entries').select('*').order('occurred_on', { ascending: false })); },
+      async upsert(row) { const m = await me(); const { id, tagged, author, gallery, ...data } = row; if (id) return must(await sb().from('journal_entries').update(data).eq('id', id).select().single()); return must(await sb().from('journal_entries').insert({ ...data, author_id: m.id }).select().single()); },
+      async remove(id) { must(await sb().from('journal_entries').delete().eq('id', id)); },
+    },
+    scholars: {
+      async all() { return must(await sb().from('directory').select('*').order('full_name')); },
+      async upsert(row) { const { id, coach, mentor, phone, calendar_token, ...data } = row; if (id) return must(await sb().from('scholars').update(data).eq('id', id).select().single()); return must(await sb().from('scholars').insert(data).select().single()); },
+      async remove(id) { must(await sb().from('scholars').delete().eq('id', id)); },
+      async funding(scholarId) { return must(await sb().from('scholarship_years').select('*').eq('scholar_id', scholarId).order('academic_year', { ascending: false })); },
+      async setFunding(scholar_id, academic_year, patch) { must(await sb().from('scholarship_years').upsert({ scholar_id, academic_year, ...patch, updated_at: nowIso() })); },
+    },
+    coaching: {
+      async coaches() { return must(await sb().from('directory').select('*').eq('role', 'coach').order('full_name')); },
+      async slots(coachId) { const rows = must(await sb().from('coaching_sessions').select('*').eq('coach_id', coachId).gte('starts_at', nowIso()).order('starts_at')); const map = await people(rows.map((r) => r.scholar_id)); return rows.map((r) => ({ ...r, scholar: map.get(r.scholar_id) || null })); },
+      async createSlots(coachId, slots) { must(await sb().from('coaching_sessions').insert(slots.map((s) => ({ coach_id: coachId, starts_at: s.starts_at, ends_at: s.ends_at, status: 'open', meeting_link: s.meeting_link || null })))); },
+      async removeSlot(id) { must(await sb().from('coaching_sessions').delete().eq('id', id).eq('status', 'open')); },
+    },
+  },
+
+  calendar: {
+    async url() { const m = await me(); if (!m.calendar_token) return null; return `${SUPABASE_URL.replace('.supabase.co', '.functions.supabase.co')}/calendar?t=${m.calendar_token}`; },
+    async rotate() { ME = null; const token = must(await sb().rpc('rotate_calendar_token')); return api.calendar.url(); },
+  },
 
   auth: {
     async signIn(email) { return sendCode(email); },
