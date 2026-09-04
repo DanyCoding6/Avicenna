@@ -41,7 +41,7 @@ const page = await ctx.newPage();
 const errors = [];
 page.on('pageerror', (e) => errors.push(`[pageerror] ${e.message}`));
 page.on('console', (m) => { if (m.type() === 'error' && !/realtime|websocket/i.test(m.text())) errors.push(`[console] ${m.text().slice(0, 200)}`); });
-const routes = ['/home', '/events', '/events?seg=opportunities', '/events/e1', '/opportunities/op1', '/programme', '/programme/coaching', '/programme/curriculum', '/programme/curriculum/m1', '/programme/project', '/programme/mentorship', '/programme/chaplaincy', `/thread/${ME.coach_id}`, '/hub/scholars', '/hub/feed', '/hub/space', `/scholar/${ME.id}`, '/post/hp1', '/journal', '/journal/j1', '/profile'];
+const routes = ['/home', '/events', '/events?seg=opportunities', '/events/e1', '/opportunities/op1', '/programme', '/coaching', '/programme/curriculum', '/programme/curriculum/m1', '/programme/project', '/programme/mentorship', '/programme/chaplaincy', `/thread/${ME.coach_id}`, '/hub/scholars', '/hub/feed', '/hub/space', `/scholar/${ME.id}`, '/post/hp1', '/journal', '/journal/j1', '/profile'];
 await page.goto(base + '#/home', { waitUntil: 'networkidle' });
 for (const r of routes) { await page.goto(base + '#' + r); await page.waitForTimeout(400); const text = (await page.locator('#view').innerText()).slice(0, 70).replace(/\s+/g, ' '); console.log(r.padEnd(34), text); if (/went wrong|Could not start/.test(text)) errors.push(`[view] ${r}: ${text}`); }
 // A few mutations

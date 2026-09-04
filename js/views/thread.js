@@ -3,7 +3,7 @@ import { icons } from '../icons.js';
 import { toast, emptyState } from '../ui.js';
 import { avatar } from '../components/index.js';
 
-export const header = ({ params, state }) => ({ title: state?.threadName || 'Messages', backTo: '/programme' });
+export const header = ({ params, state }) => ({ title: state?.threadName || 'Messages', backTo: '/coaching' });
 
 export async function render({ api, params, me, state }) {
   const t = await api.messages.thread(params.id);

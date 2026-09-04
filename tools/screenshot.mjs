@@ -8,7 +8,7 @@ import { mkdirSync } from 'node:fs';
 const out = process.argv[2] || 'shots';
 mkdirSync(out, { recursive: true });
 const base = process.env.BASE || 'http://127.0.0.1:8080/';
-const routes = ['/home', '/events', '/events?seg=past', '/events?seg=opportunities', '/events/e-winter', '/opportunities/op-1', '/programme', '/programme/coaching', '/programme/curriculum', '/programme/curriculum/mod-5', '/programme/project', '/programme/mentorship', '/programme/chaplaincy', '/thread/c-yusuf', '/hub/scholars', '/hub/feed', '/hub/space', '/scholar/s-omar', '/post/hp-1', '/journal', '/journal/j-1', '/profile'];
+const routes = ['/home', '/events', '/events?seg=past', '/events?seg=opportunities', '/events/e-winter', '/opportunities/op-1', '/programme', '/coaching', '/programme/curriculum', '/programme/curriculum/mod-5', '/programme/project', '/programme/mentorship', '/programme/chaplaincy', '/thread/c-yusuf', '/hub/scholars', '/hub/feed', '/hub/space', '/scholar/s-omar', '/post/hp-1', '/journal', '/journal/j-1', '/profile'];
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ ...devices['iPhone 14'], colorScheme: 'dark' });
 const page = await ctx.newPage();

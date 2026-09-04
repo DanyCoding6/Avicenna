@@ -115,7 +115,7 @@ export const pass = (next, me) => {
     title = item.title; sub = `${range(item.starts_at, item.ends_at)}<br>${esc(item.location)}`; href = `#/events/${item.id}`;
     foot = `<button class="btn ${item.my_status === 'going' ? 'btn--on' : 'btn--primary'}" type="button" data-action="rsvp" data-id="${esc(item.id)}">${item.my_status === 'going' ? `${icons.check} I'm going` : 'RSVP'}</button><span class="pass__count">${item.going_count ? `${item.going_count} going` : ''}</span>`;
   } else if (type === 'coaching') {
-    kind = 'Coaching session'; title = `With ${item.coach?.full_name || 'your coach'}`; sub = `${range(item.starts_at, item.ends_at)}<br>Online`; href = '#/programme/coaching';
+    kind = 'Coaching session'; title = `With ${item.coach?.full_name || 'your coach'}`; sub = `${range(item.starts_at, item.ends_at)}<br>Online`; href = '#/coaching';
     foot = `<a class="btn btn--primary" href="${esc(item.meeting_link || '#')}" target="_blank" rel="noopener">${icons.video} Join</a><span class="pass__count">${relative(item.starts_at)}</span>`;
   } else {
     kind = 'Adam Hub booking'; title = item.purpose; sub = `${range(item.starts_at, item.ends_at)}<br>Adam Hub, Westminster`; href = '#/hub/space';

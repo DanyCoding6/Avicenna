@@ -58,7 +58,7 @@ export function scholarEvents({ scholar, events = [], rsvps = [], sessions = [],
   }
   for (const s of sessions) {
     if (!['booked', 'completed'].includes(s.status)) continue;
-    out.push({ uid: `coaching-${s.id}@avicenna`, start: s.starts_at, end: s.ends_at, summary: `Coaching${s.coach_name ? ` with ${s.coach_name}` : ''}`, location: s.meeting_link || 'Online', url: link('/programme/coaching'), categories: ['Avicenna', 'Coaching'], alarmMinutes: 30 });
+    out.push({ uid: `coaching-${s.id}@avicenna`, start: s.starts_at, end: s.ends_at, summary: `Coaching${s.coach_name ? ` with ${s.coach_name}` : ''}`, location: s.meeting_link || 'Online', url: link('/coaching'), categories: ['Avicenna', 'Coaching'], alarmMinutes: 30 });
   }
   for (const b of bookings) {
     if (b.status !== 'approved') continue;

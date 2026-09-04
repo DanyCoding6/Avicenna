@@ -28,7 +28,7 @@ export async function render({ api, me }) {
     <section class="section">
       ${sectionHead('This month')}
       <div class="home-strands">
-        <a class="tile-card" href="#/programme/coaching"><span class="label">Coaching</span>${cadence(h.cadence, { showText: false })}<div class="tile-card__sub">${h.cadence.done + h.cadence.booked} of ${h.cadence.target} sessions ${h.cadence.done + h.cadence.booked >= 2 ? 'in the diary' : 'booked'}${h.cadence.done + h.cadence.booked < 2 ? ' · book one' : ''}</div></a>
+        <a class="tile-card" href="#/coaching"><span class="label">Coaching</span>${cadence(h.cadence, { showText: false })}<div class="tile-card__sub">${h.cadence.done + h.cadence.booked} of ${h.cadence.target} sessions ${h.cadence.done + h.cadence.booked >= 2 ? 'in the diary' : 'booked'}${h.cadence.done + h.cadence.booked < 2 ? ' · book one' : ''}</div></a>
         ${proj ? `<a class="tile-card" href="#/programme/project"><span class="label">Project</span><div class="tile-card__big">${projDays != null ? projDays : '–'}<small>days</small></div><div class="tile-card__sub">to presentation · next: ${esc(proj.next_milestone?.title || 'all done')}</div></a>` : ''}
       </div>
       <a class="tile-card mt-4" href="#/programme/curriculum" style="margin:12px var(--gutter) 0;display:block">

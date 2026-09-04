@@ -1,5 +1,5 @@
 /* Avicenna service worker — app shell precache + stale-while-revalidate for data. */
-const VERSION = 'v1.1.0';
+const VERSION = 'v1.2.0';
 const SHELL = `avicenna-shell-${VERSION}`;
 const DATA = `avicenna-data-${VERSION}`;
 const IMAGES = 'avicenna-images';

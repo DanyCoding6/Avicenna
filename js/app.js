@@ -34,6 +34,7 @@ const $ = (s) => document.querySelector(s);
 const TABS = [
   { id: 'home', label: 'Home', href: '#/home', icon: icons.home },
   { id: 'events', label: 'Events', href: '#/events', icon: icons.events },
+  { id: 'coaching', label: 'Coaching', href: '#/coaching', icon: icons.compass },
   { id: 'programme', label: 'Programme', href: '#/programme', icon: icons.programme },
   { id: 'hub', label: 'Hub', href: '#/hub', icon: icons.hub },
 ];
@@ -72,14 +73,15 @@ function routes() {
     { path: '/events', tab: 'events', view: events },
     { path: '/events/:id', tab: 'events', view: event },
     { path: '/opportunities/:id', tab: 'events', view: opportunity },
+    { path: '/coaching', tab: 'coaching', view: coaching },
     { path: '/programme', tab: 'programme', view: programme },
-    { path: '/programme/coaching', tab: 'programme', view: coaching },
+    { path: '/programme/coaching', tab: 'coaching', view: { render: () => { navigate('/coaching', { replace: true }); return ''; } } },
     { path: '/programme/curriculum', tab: 'programme', view: curriculum },
     { path: '/programme/curriculum/:id', tab: 'programme', view: curriculum },
     { path: '/programme/project', tab: 'programme', view: project },
     { path: '/programme/mentorship', tab: 'programme', view: mentorship },
     { path: '/programme/chaplaincy', tab: 'programme', view: chaplaincy },
-    { path: '/thread/:id', tab: 'programme', view: thread },
+    { path: '/thread/:id', tab: 'coaching', view: thread },
     { path: '/hub', tab: 'hub', view: hub },
     { path: '/hub/:segment', tab: 'hub', view: hub },
     { path: '/scholar/:id', tab: 'hub', view: scholar },
@@ -175,7 +177,7 @@ boot().catch((err) => { console.error(err); $('#view').innerHTML = `<div class="
 
 // Pull to refresh on the four tab roots: a khatam that turns with the pull and spins while refreshing.
 function wirePullToRefresh() {
-  const ROOTS = new Set(['/home', '/events', '/programme', '/hub']);
+  const ROOTS = new Set(['/home', '/events', '/coaching', '/programme', '/hub']);
   const el = document.createElement('div'); el.className = 'ptr'; el.innerHTML = khatam('khatam'); document.body.appendChild(el);
   const icon = el.querySelector('.khatam');
   let startY = 0, pulling = false, dist = 0;

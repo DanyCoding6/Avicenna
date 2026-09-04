@@ -15,7 +15,7 @@ const go = async (h) => { await page.goto(base + '#' + h); await page.waitForTim
 const text = async () => (await page.locator('#view').innerText()).replace(/\s+/g, ' ');
 const sheetOpen = () => page.locator('#sheet-root[data-open="1"] .sheet');
 
-await go('/programme/coaching');
+await go('/coaching');
 await page.click('[data-action=book]'); await page.waitForTimeout(400);
 await page.screenshot({ path: `${out}/sheet_book.png` });
 await sheetOpen().locator('[data-slot]').first().click();
