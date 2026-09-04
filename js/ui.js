@@ -17,8 +17,10 @@ export function toast(message, { type = 'info', action, onAction, duration = 320
 }
 
 let currentSheet = null;
+let closeTimer = null;
 export function sheet({ title, body = '', actions = [], onMount, onClose, dismissible = true }) {
   closeSheet();
+  clearTimeout(closeTimer);
   const root = $('#sheet-root');
   root.innerHTML = `
     <div class="sheet__scrim" data-close></div>
@@ -53,7 +55,7 @@ export function closeSheet() {
   currentSheet = null;
   api.root.setAttribute('data-open', '0');
   document.body.style.overflow = '';
-  setTimeout(() => { api.root.removeAttribute('data-open'); api.root.innerHTML = ''; }, 330);
+  closeTimer = setTimeout(() => { api.root.removeAttribute('data-open'); api.root.innerHTML = ''; }, 330);
   onClose?.();
 }
 
@@ -78,11 +80,14 @@ export const skeletonRows = (n = 4) => `<div class="ledger">${Array.from({ lengt
 
 export const emptyState = (title, sub = '') => `<div class="empty">${khatam()}<div class="empty__title">${esc(title)}</div>${sub ? `<div class="empty__sub">${esc(sub)}</div>` : ''}</div>`;
 
+// One delegated click handler per root; re-binding on re-render replaces the previous one.
 export function bindActions(root, handlers) {
-  root.addEventListener('click', (e) => {
+  if (root._actionsHandler) root.removeEventListener('click', root._actionsHandler);
+  root._actionsHandler = (e) => {
     const el = e.target.closest('[data-action]');
     if (!el || !root.contains(el)) return;
     const fn = handlers[el.dataset.action];
     if (fn) { e.preventDefault(); fn(el, e); }
-  });
+  };
+  root.addEventListener('click', root._actionsHandler);
 }

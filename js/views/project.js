@@ -25,6 +25,11 @@ export async function render({ api }) {
 export function mount(root, { api }) {
   bindActions(root, {
     'toggle-milestone': async (el) => { await api.project.toggleMilestone(Number(el.dataset.idx)); refresh(); },
-    upload: () => toast('Available once Supabase storage is connected'),
+    upload: () => {
+      if (!api.project.upload) { toast('Available once Supabase storage is connected'); return; }
+      const input = document.createElement('input'); input.type = 'file'; input.accept = '.pdf,.pptx,.key,.docx';
+      input.addEventListener('change', async () => { const f = input.files[0]; if (!f) return; if (f.size > 25 * 1024 * 1024) { toast('Keep it under 25 MB', { type: 'error' }); return; } toast('Uploading…'); try { await api.project.upload(f); toast('Submitted'); refresh(); } catch (e) { toast(e.message, { type: 'error' }); } });
+      input.click();
+    },
   });
 }
