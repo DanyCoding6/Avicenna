@@ -1,0 +1,94 @@
+/* Avicenna — design tokens ("Lapis & Gilt")
+   Lapis-ink grounds, gilt accent, Samarkand-tile turquoise for success. */
+:root {
+  color-scheme: dark;
+
+  /* Ink (grounds) */
+  --ink-900: #070F22;
+  --ink-800: #0C1830;
+  --ink-700: #14224A;
+  --ink-600: #1E3066;
+  --ink-500: #2A3F80;
+
+  /* Lapis (secondary interactive) */
+  --lapis-500: #3B63E0;
+  --lapis-300: #7D9BF0;
+
+  /* Gilt (primary accent) */
+  --gilt-500: #E0B95A;
+  --gilt-300: #F2D88B;
+  --gilt-700: #9A7A2C;
+
+  /* Tile (success / live) & Coral (error) */
+  --tile-500: #2BB3A3;
+  --tile-300: #7ED9CE;
+  --coral-500: #E2634B;
+
+  /* Paper (text) */
+  --paper-100: #F3EFE4;
+  --paper-300: #C9C4B6;
+  --paper-500: #8B8779;
+
+  /* Derived */
+  --hairline: rgba(30, 48, 102, 0.6);
+  --hairline-strong: rgba(30, 48, 102, 0.95);
+  --gilt-hairline: rgba(224, 185, 90, 0.35);
+  --gilt-glow: rgba(224, 185, 90, 0.12);
+  --scrim: rgba(3, 7, 18, 0.7);
+  --focus: 0 0 0 2px var(--ink-900), 0 0 0 4px var(--gilt-500);
+
+  /* Type */
+  --font-display: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
+  --font-ui: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --fs-display-xl: 34px;
+  --fs-display-l: 26px;
+  --fs-display-m: 20px;
+  --fs-body: 17px;
+  --fs-secondary: 15px;
+  --fs-meta: 13px;
+  --fs-label: 11px;
+
+  --lh-display: 1.15;
+  --lh-body: 1.5;
+  --tracking-caps: 0.14em;
+
+  /* Space (4px grid) */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-7: 32px;
+  --s-8: 48px;
+  --gutter: 20px;
+
+  /* Shape */
+  --r-s: 6px;
+  --r-m: 12px;
+  --r-l: 20px;
+  --r-pill: 999px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 150ms;
+  --dur: 200ms;
+  --dur-slow: 320ms;
+
+  /* Layout */
+  --header-h: 56px;
+  --tabbar-h: 60px;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --max-w: 560px;
+
+  /* Date column width in ledger rows */
+  --ledger-col: 56px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-fast: 0ms; --dur: 0ms; --dur-slow: 0ms; }
+}

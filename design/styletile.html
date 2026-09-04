@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>Avicenna Style Tile</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/components.css">
+<link rel="stylesheet" href="../css/views.css">
+<style>
+  .tile-wrap { max-width: 560px; margin: 0 auto; padding-bottom: 80px; }
+  .tile-intro { padding: 48px var(--gutter) 24px; }
+  .tile-intro h1 { font-size: 44px; line-height: 1; }
+  .tile-intro p { color: var(--paper-300); margin-top: 12px; }
+  .tile-section h2 { font-size: 22px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .tile-section h2 .khatam { width: 14px; height: 14px; }
+  .demo { border: 1px dashed var(--hairline-strong); border-radius: var(--r-m); padding: 16px 0; margin-top: 12px; }
+  .demo > .wrap + .wrap { margin-top: 12px; }
+  .note { font-family: var(--font-mono); font-size: 11px; color: var(--paper-500); margin-top: 8px; }
+  .main { padding-bottom: 0; }
+</style>
+</head>
+<body>
+<div class="tile-wrap" id="tile"></div>
+<div class="sheet-root" id="sheet-root"></div><div class="toasts" id="toasts"></div>
+<script type="module">
+import { icons, khatam } from '../js/icons.js';
+import { pass, cadence, spine, rail, seasonHero, eventRow, strandRow, postCard, scholarRow, segmented, chips, avatar, resourceRow } from '../js/components/index.js';
+import { toast, sheet } from '../js/ui.js';
+import * as D from '../js/demo-data.js';
+
+const me = D.scholars[0];
+const ev = { ...D.events[0], going_count: 12, my_status: 'going', attendees: D.scholars.slice(0, 5) };
+const online = { ...D.events[3], going_count: 4, my_status: null };
+const swatch = (name, hex, use) => `<div class="swatch"><div class="swatch__color" style="background:${hex}"></div><div class="swatch__meta"><b style="color:var(--paper-100)">${name}</b><br>${hex}<br>${use}</div></div>`;
+const S = (title, body, note = '') => `<section class="tile-section"><h2>${khatam('khatam')}${title}</h2>${body}${note ? `<div class="note">${note}</div>` : ''}</section>`;
+
+document.getElementById('tile').innerHTML = `
+  <div class="tile-intro"><div class="wordmark" style="margin-bottom:24px">${khatam('khatam')}<span class="wordmark__text">Avicenna</span></div><h1>Lapis &amp; Gilt</h1><p>The design system for the Avicenna scholars' app. Lapis-ink grounds, gold-leaf rules and the eight-pointed <em>khatam</em> of Islamic geometry, used structurally rather than as decoration. Dark-first for phones and late evenings.</p></div>
+
+  ${S('Colour', `<div class="swatches">
+    ${swatch('ink-900', '#070F22', 'page')}${swatch('ink-800', '#0C1830', 'surface')}${swatch('ink-700', '#14224A', 'raised')}${swatch('ink-600', '#1E3066', 'hairline')}
+    ${swatch('gilt-500', '#E0B95A', 'accent · act now')}${swatch('gilt-300', '#F2D88B', 'highlight')}${swatch('gilt-700', '#9A7A2C', 'pressed')}${swatch('lapis-500', '#3B63E0', 'links · confidential')}
+    ${swatch('tile-500', '#2BB3A3', 'success · going · live')}${swatch('coral-500', '#E2634B', 'error · cancel')}${swatch('paper-100', '#F3EFE4', 'text')}${swatch('paper-300', '#C9C4B6', 'secondary')}
+  </div>`, 'One brand hue (lapis ink), one accent (gilt). Gilt always means "act now". Turquoise is the only other saturated colour and only ever means success.')}
+
+  ${S('Type', `
+    <div class="type-spec"><span class="meta">Display 34</span><span class="display display-xl">Salaam, <em class="italic gilt">Aisha.</em></span></div>
+    <div class="type-spec"><span class="meta">Display 26</span><span class="display display-l">Winter Retreat</span></div>
+    <div class="type-spec"><span class="meta">Display 20 i</span><span class="display display-m italic">A quiet week.</span></div>
+    <div class="type-spec"><span class="meta">Body 17</span><span>Two sessions a month with your coach. Fifty minutes, online, yours.</span></div>
+    <div class="type-spec"><span class="meta">Secondary 15</span><span class="secondary">Plas y Brenin, Snowdonia · 12 going</span></div>
+    <div class="type-spec"><span class="meta">Meta mono 13</span><span class="meta">Fri 14 Oct · 09:00 · Cohort 2024</span></div>
+    <div class="type-spec"><span class="meta">Label 11</span><span class="label">From the Foundation</span></div>
+    <div class="type-spec"><span class="meta">Numerals</span><span class="display" style="font-size:44px;font-variant-numeric:lining-nums tabular-nums">14 · 118 · 2/12</span></div>`,
+    'Cormorant Garamond 600 for display and date numerals (lining figures). IBM Plex Sans for UI. IBM Plex Mono for times, tags and status lines.')}
+
+  ${S('The Pass', `<div style="margin:0 calc(-1 * var(--gutter))">${pass({ type: 'event', at: online.starts_at, item: online }, me)}</div>`, 'Home shows one "next thing" as a Wallet-style pass with a perforated tear line. Event, coaching session or Adam Hub booking, whichever is soonest.')}
+
+  ${S('Season hero', `<div style="margin:0 calc(-1 * var(--gutter))">${seasonHero(ev)}</div>`, 'The next retreat, full bleed, girih line pattern at 5% opacity.')}
+
+  ${S('Ledger rows', `<div class="ledger" style="margin:0 calc(-1 * var(--gutter))">${eventRow(ev)}${eventRow(online)}${strandRow({ href: '/programme/coaching', icon: icons.compass, title: 'Coaching', status: 'September · 1 of 2 booked', badge: 2 })}${strandRow({ href: '/programme/chaplaincy', icon: icons.moon, title: 'Chaplaincy', status: 'Confidential · request a conversation', confidential: true })}</div>`, 'Hairline-separated rows with a 56px date column. No card borders. Gilt tick when you are going.')}
+
+  ${S('Cadence dots · chapter spine · milestone rail', `
+    <div class="demo"><div class="wrap">${cadence({ target: 2, sessions: [{ status: 'completed', starts_at: new Date(), ends_at: new Date() }], done: 1, booked: 0 })}</div>
+    <div class="wrap">${cadence({ target: 2, sessions: [{ status: 'completed', starts_at: new Date(), ends_at: new Date() }, { status: 'booked', starts_at: new Date(), ends_at: new Date() }], done: 1, booked: 1 })}</div></div>
+    <div class="demo"><div class="wrap"><div class="row-between"><span class="label">Curriculum</span><span class="meta">4 / 12</span></div><div class="mt-2">${spine({ modules: D.curriculum_modules.map((m, i) => ({ ...m, done: i < 4 })), current: D.curriculum_modules[4], done: 4, total: 12 })}</div></div></div>
+    <div class="demo"><div class="wrap">${rail(D.projects[0].milestones)}</div></div>`,
+    'Two coaching sessions a month as two dots. Twelve chapters as a book fore-edge. Project milestones as a rail of khatam nodes.')}
+
+  ${S('Buttons · chips · pills', `
+    <div class="row" style="flex-wrap:wrap"><button class="btn btn--primary">RSVP</button><button class="btn btn--on">${icons.check} Going</button><button class="btn btn--secondary">Maybe</button><button class="btn btn--ghost">${icons.comment} Message</button><button class="btn btn--lapis">Request a conversation</button><button class="btn btn--danger">Cancel</button><button class="btn btn--quiet">Skip</button></div>
+    <div style="margin:12px calc(-1 * var(--gutter)) 0">${chips([{ value: 'all', label: 'All' }, { value: 'cohort', label: 'My cohort' }, { value: 'foundation', label: 'Foundation' }, { value: 'online', label: 'Online' }], 'all')}</div>
+    <div class="row mt-2" style="flex-wrap:wrap"><span class="pill">Cohort 2024</span><span class="pill pill--gilt">Retreat</span><span class="pill pill--lapis">Online</span><span class="pill pill--tile pill--live">Live</span><span class="pill pill--coral">2</span></div>
+    <div style="margin:12px calc(-1 * var(--gutter)) 0">${segmented([{ value: 'a', label: 'Upcoming', count: 7 }, { value: 'b', label: 'Past', count: 3 }, { value: 'c', label: 'Opportunities', count: 4 }], 'a')}</div>`)}
+
+  ${S('People', `<div class="ledger" style="margin:0 calc(-1 * var(--gutter))">${scholarRow(D.scholars[1])}${scholarRow(D.scholars[16])}</div>
+    <div class="row mt-4">${avatar(D.scholars[0], 'avatar--xl')}${avatar(D.scholars[18], 'avatar--l')}${avatar(D.scholars[2])}${avatar(D.scholars[3], 'avatar--s')}</div>`, 'Initials in Cormorant on lapis. Coaches and mentors get a gilt ring.')}
+
+  ${S('Feed', `<div style="margin:0 calc(-1 * var(--gutter))">${postCard({ ...D.hub_posts[1], author: D.scholars[7], like_count: 9, liked_by_me: true, comment_count: 2 })}</div>`)}
+
+  ${S('Resources · inputs', `<div class="ledger">${resourceRow(D.resources[0])}${resourceRow(D.resources[1])}</div>
+    <label class="field mt-4"><span class="field__label label">Email</span><input class="input" placeholder="you@university.ac.uk"></label>
+    <label class="field"><span class="field__label label">Code</span><input class="input input--code" placeholder="••••••" value="482 913"></label>
+    <label class="switch mt-4"><span>Show my phone number to other scholars</span><input type="checkbox" checked><span class="switch__track"></span></label>`)}
+
+  ${S('Sheets · toasts · empty states', `<div class="row"><button class="btn btn--ghost" id="demo-sheet">Open a sheet</button><button class="btn btn--ghost" id="demo-toast">Toast</button><button class="btn btn--ghost" id="demo-err">Error toast</button></div>
+    <div class="empty" style="padding-bottom:0">${khatam('khatam')}<div class="empty__title">A quiet week.</div><div class="empty__sub">Nothing in the diary yet. Book a coaching session or browse events.</div></div>`)}
+
+  ${S('Tab bar', `<div style="position:relative;height:72px;border:1px dashed var(--hairline-strong);border-radius:var(--r-m);overflow:hidden"><nav class="tabbar" style="position:absolute"><div class="tabbar__inner"><a class="tab" href="#">${icons.home}<span>Home</span></a><a class="tab" href="#" aria-current="page">${icons.events}<span>Events</span></a><a class="tab" href="#">${icons.programme}<span>Programme</span></a><a class="tab" href="#">${icons.hub}<span>Hub</span><span class="tab__badge"></span></a></div></nav></div>`, 'Monoline 1.5px icons. Active tab in gilt with a star dot above.')}
+
+  <div class="rule-gilt">${khatam('khatam')}</div>
+`;
+document.getElementById('demo-sheet').addEventListener('click', () => sheet({ title: 'Book a session', body: '<p class="secondary">Yusuf Ali\'s open slots. Pick one.</p><div class="slot-grid mt-4"><button class="slot" aria-pressed="true"><div class="slot__day">Tue 9 Sept</div><div class="slot__time">17:00</div></button><button class="slot"><div class="slot__day">Thu 11 Sept</div><div class="slot__time">12:00</div></button></div>', actions: [{ label: 'Confirm booking', onClick: () => toast('Session booked') }] }));
+document.getElementById('demo-toast').addEventListener('click', () => toast('See you there'));
+document.getElementById('demo-err').addEventListener('click', () => toast('That slot has just been taken.', { type: 'error' }));
+</script>
+</body>
+</html>
