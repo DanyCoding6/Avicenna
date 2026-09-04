@@ -38,7 +38,10 @@ export function mount(root, { api, onSignedIn }) {
       if (r?.error) throw r.error;
       root.querySelector('#signin-sent-to').textContent = email;
       emailForm.hidden = true; codeForm.hidden = false; codeForm.code.focus();
-    } catch (err) { toast(err.message || 'Could not send the code', { type: 'error' }); }
+    } catch (err) {
+      const msg = /database error|not on the avicenna/i.test(err.message || '') ? 'This email is not on the scholars list. Contact the programme team.' : (err.message || 'Could not send the code');
+      toast(msg, { type: 'error', duration: 5000 });
+    }
     finally { btn.disabled = false; }
   });
   codeForm.addEventListener('submit', async (e) => {

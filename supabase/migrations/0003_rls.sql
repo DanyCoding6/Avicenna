@@ -65,8 +65,12 @@ begin
 end $$;
 drop trigger if exists protect_scholar_columns on scholars;
 create trigger protect_scholar_columns before update on scholars for each row execute function public.protect_scholar_columns();
--- Phone numbers: hidden unless phone_visible (enforced through the directory view below; the base table
--- still exposes the column to authenticated users, so the app reads scholars via `directory`).
+-- Phone numbers never leave the base table directly: the app reads people through the `directory` view
+-- (0004), which returns phone only when phone_visible or it is your own row.
+revoke select on scholars from anon, authenticated;
+grant select (id, email, full_name, university, subject, year_of_study, cohort, role, coach_id, mentor_id, avatar_url, bio, currently,
+              linkedin_url, phone_visible, interests, auth_linked, created_at, updated_at) on scholars to authenticated;
+grant update on scholars to authenticated;
 
 -- ---------- events / rsvps ----------
 drop policy if exists events_read on events;

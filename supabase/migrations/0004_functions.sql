@@ -39,11 +39,13 @@ language sql security definer set search_path = public as $$
 $$;
 
 -- ---------- Views ----------
--- Directory: phone only when the scholar allows it.
-create or replace view public.directory with (security_invoker = true) as
+-- Directory: phone only when the scholar allows it. Definer view (owner reads phone; callers cannot).
+create or replace view public.directory as
   select id, email, full_name, university, subject, year_of_study, cohort, role, coach_id, mentor_id, avatar_url, bio, currently,
          linkedin_url, case when phone_visible or id = auth.uid() then phone end as phone, phone_visible, interests
   from scholars;
+revoke all on public.directory from anon, public;
+grant select on public.directory to authenticated;
 
 create or replace view public.events_with_my_rsvp with (security_invoker = true) as
   select e.*,

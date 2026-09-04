@@ -10,7 +10,7 @@ const PRECACHE = [
   './manifest.webmanifest',
   './css/tokens.css', './css/base.css', './css/components.css', './css/views.css',
   './js/app.js', './js/config.js', './js/router.js', './js/store.js', './js/ui.js', './js/format.js', './js/icons.js',
-  './js/data.js', './js/data/demo.js', './js/demo-data.js', './js/supabase.js', './js/auth.js',
+  './js/data.js', './js/data/demo.js', './js/data/supabase.js', './js/demo-data.js', './js/supabase.js', './js/auth.js',
   './js/components/index.js',
   './js/views/signin.js', './js/views/home.js', './js/views/events.js', './js/views/event.js', './js/views/opportunities.js',
   './js/views/programme.js', './js/views/coaching.js', './js/views/curriculum.js', './js/views/project.js',

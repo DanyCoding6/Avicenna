@@ -99,6 +99,7 @@ async function boot() {
   onRoute((match, ctx) => { renderHeader(match, ctx); renderTabs(match.route.tab); });
   $('#tabbar').hidden = false;
   await start();
+  if (navigator.onLine) state.api.flushQueue?.().catch(() => {});
   registerSW();
   wireInstall();
   wireNetwork();

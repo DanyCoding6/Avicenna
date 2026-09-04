@@ -142,6 +142,7 @@ export const postCard = (p, { link = true } = {}) => `
       ${p.kind === 'ask' ? '<span class="pill pill--lapis">Ask</span>' : p.kind === 'win' ? '<span class="pill pill--gilt">Win</span>' : ''}${p.pinned ? ` <span class="pill pill--gilt">${khatam('khatam').replace('class="khatam"', 'style="width:10px;height:10px"')} Pinned</span>` : ''}
     </div>
     ${link ? `<a href="#/post/${esc(p.id)}" style="color:inherit;display:block" class="post__body">${esc(p.body)}</a>` : `<div class="post__body">${esc(p.body)}</div>`}
+    ${p.image_url ? `<div class="post__image"><img src="${esc(p.image_url)}" alt="" loading="lazy"></div>` : ''}
     <div class="post__actions">
       <button class="post__action" type="button" data-action="like" data-id="${esc(p.id)}" aria-pressed="${p.liked_by_me}">${icons.heart}<span>${p.like_count || ''}</span></button>
       <a class="post__action" href="#/post/${esc(p.id)}">${icons.comment}<span>${p.comment_count || ''}</span></a>

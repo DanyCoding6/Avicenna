@@ -18,10 +18,20 @@ export async function render({ api, params, me, state }) {
     <form class="composer" id="composer"><input class="input grow" name="body" placeholder="Message" autocomplete="off" maxlength="2000"><button class="btn btn--primary" type="submit" aria-label="Send" style="padding:0 14px">${icons.send}</button></form>`;
 }
 
+let unsubscribe = null;
 export function mount(root, { api, params, me }) {
   const form = root.querySelector('#composer');
   const thread = root.querySelector('#thread');
   window.scrollTo(0, document.body.scrollHeight);
+  unsubscribe?.();
+  if (api.messages.subscribe) {
+    unsubscribe = api.messages.subscribe(params.id, (m) => {
+      if (m.sender_id === me.id || m.scholar_id !== me.id) return;
+      const el = document.createElement('div'); el.className = 'bubble bubble--them'; el.innerHTML = `${esc(m.body)}<span class="bubble__time">${time(m.created_at)}</span>`; thread.appendChild(el);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+    window.addEventListener('hashchange', () => { unsubscribe?.(); unsubscribe = null; }, { once: true });
+  }
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const body = form.body.value.trim(); if (!body) return;
