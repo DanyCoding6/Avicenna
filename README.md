@@ -24,7 +24,9 @@ js/app.js                bootstrap, header, tab bar, routes
 js/router.js             hash router
 js/data.js               picks demo or Supabase API at start-up
 js/data/demo.js          demo API (same surface as the Supabase one)
-js/views/                one module per screen
+js/views/                one module per screen (js/views/staff/ holds the staff console sections)
+css/brand.css · js/brand.js   the brand swap point: colours and logo (see brand/README.md)
+supabase/functions/      calendar feed Edge Function and the shared ICS builder
 js/components/index.js   shared render functions (ledger row, pass, cadence dots, spine, rail…)
 design/styletile.html    living style tile of the design system
 supabase/                migrations, seed, setup guide
@@ -38,6 +40,10 @@ tools/                   dev scripts (icon rasteriser, screenshot smoke test)
 ```sh
 node tools/make-icons.mjs        # regenerate PNG icons from icons/icon.svg
 node tools/screenshot.mjs out/   # screenshot every route at iPhone size and fail on console errors (needs a server on :8080)
+node tools/flows-check.mjs out/  # click through booking, RSVP, posting, staff approvals, uploads and assert each state change
+node tools/mock-supabase-check.mjs  # run every route against a mocked Supabase host to exercise the real data layer
+node tools/contrast-check.mjs    # WCAG contrast for every text/surface token pair
+node tools/ics-check.mjs         # validate the calendar feed output
 ```
 Both use the globally installed Playwright.
 

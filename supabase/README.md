@@ -15,6 +15,7 @@ SQL editor → paste and run each file in order:
 | `migrations/0002_auth.sql` | invite-only sign-in trigger |
 | `migrations/0003_rls.sql` | row-level security, storage buckets and their policies |
 | `migrations/0004_functions.sql` | booking/like RPCs, directory and feed views |
+| `migrations/0005_round2.sql` | calendar token, scholarship years and documents, staff inbox counts |
 | `seed.sql` (optional) | a demo cohort, events, curriculum, project |
 
 Or with the CLI: `supabase link --project-ref <ref> && supabase db push`.
@@ -59,9 +60,21 @@ Coaches, mentors, the chaplain and staff are rows too, with `role` set according
 | staff | write events, announcements, opportunities, journal, modules, resources; approve Adam Hub requests; **cannot** read chaplaincy requests |
 
 ## 6. Storage
-Buckets are created by `0003_rls.sql`: `avatars` (public), `hub-images`, `journal`, `resources`, `project-deliverables` (private; the app uses signed URLs). Upload curriculum PDFs and recordings to `resources/` and point `resources.storage_path` at them.
+Buckets are created by the migrations: `avatars` (public), `hub-images`, `journal`, `resources`, `project-deliverables`, `scholar-documents` (private; the app uses signed URLs). Upload curriculum PDFs and recordings to `resources/` and point `resources.storage_path` at them.
 
-## 7. Realtime (optional, for live message threads)
+## 7. Calendar feed (Edge Function)
+Scholars can subscribe to a personal calendar from Profile → "Subscribe in your calendar". It is served by the `calendar` Edge Function using a per-scholar token (`scholars.calendar_token`, created by `0005_round2.sql`).
+
+```sh
+supabase functions deploy calendar --no-verify-jwt
+supabase secrets set APP_URL=https://scholars.avicennafoundation.org.uk/
+```
+The token is the credential, so the function is deployed without JWT verification; a scholar can reset their token from the same sheet. Validate the output locally with `node tools/ics-check.mjs`.
+
+## 8. Staff console
+Anyone with `role = 'staff'` sees a Staff pill in the header and the console at `#/staff`: inbox (Adam Hub requests, opportunity interest, scholarship documents), events, announcements, opportunities, journal, people (including scholarship years and funding status) and coaching slots. Chaplaincy requests are never shown to staff.
+
+## 9. Realtime (optional, for live message threads)
 Database → Replication → enable `messages` for realtime.
 
 ## Confidentiality note
